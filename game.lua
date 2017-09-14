@@ -1,5 +1,12 @@
+local bump, world, inspect
+inspect = require("inspect")
+local World = require("world")
 local Player = require("player")
-local player = Player(0, 0)
+local player = Player(0, 0, 0, 0, 32, 72)
+local Entity = require("entity")
+local entity = Entity(0, 450, 0, 0, 600, 50)
+World:add(player, player.x, player.y, player.width, player.height)
+World:add(entity, entity.x, entity.y, entity.width, entity.height)
 local g
 g = love.graphics
 local Game
@@ -7,18 +14,21 @@ do
   local _class_0
   local _base_0 = {
     update = function(self, dt)
-      return player:moveWithKeys(dt)
+      player:moveWithKeys(dt)
+      return player:updateCollision(dt)
     end,
     draw = function(self)
-      return player:drawRect()
+      player:draw()
+      return entity:draw()
     end,
     keypressed = function(self, key)
       if key == "escape" then
         love.event.quit()
       end
       if key == "r" then
-        return love.event.quit("restart")
+        love.event.quit("restart")
       end
+      return player:jump(key)
     end
   }
   _base_0.__index = _base_0

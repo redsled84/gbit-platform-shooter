@@ -1,27 +1,26 @@
+local World = require("world")
 local g
 g = love.graphics
 local Entity
 do
   local _class_0
   local _base_0 = {
-    drawRect = function(self)
+    draw = function(self)
       g.setColor(unpack(self.colors))
       return g.rectangle("fill", self.x, self.y, self.width, self.height)
     end,
-    updateWithVel = function(self, dt)
+    updateGravity = function(self, dt, gravity, tv)
+      self.vy = self.vy < tv and self.vy + gravity * dt or tv
+    end,
+    updatePosition = function(self, dt, gravity, tv)
+      self:updateGravity(dt, gravity, tv)
       self.x = self.x + (self.vx * dt)
       self.y = self.y + (self.vy * dt)
     end,
-    updateWithBump = function(self, dt, foo)
-      self.x, self.y = foo(dt, self.x, self.y)
+    setVelocities = function(self, vx, vy)
+      self.vx, self.vy = vx, vy
     end,
-    updateVelocities = function(self, dt, foo)
-      self.vy = foo(dt, self.vx)
-    end,
-    getCircleCenter = function(self)
-      return self.x, self.y
-    end,
-    getRectCenter = function(self)
+    getCenter = function(self)
       return self.x + self.width / 2, self.y + self.height / 2
     end,
     getFuturePos = function(self, dt)
@@ -30,15 +29,18 @@ do
   }
   _base_0.__index = _base_0
   _class_0 = setmetatable({
-    __init = function(self, x, y, vx, vy, width, height, radius, colors)
+    __init = function(self, x, y, vx, vy, width, height, colors)
+      if vx == nil then
+        vx = 0
+      end
+      if vy == nil then
+        vy = 0
+      end
       if width == nil then
         width = 100
       end
       if height == nil then
         height = 100
-      end
-      if radius == nil then
-        radius = 16
       end
       if colors == nil then
         colors = {
@@ -47,7 +49,7 @@ do
           0
         }
       end
-      self.x, self.y, self.vx, self.vy, self.width, self.height, self.radius, self.colors = x, y, vx, vy, width, height, radius, colors
+      self.x, self.y, self.vx, self.vy, self.width, self.height, self.colors = x, y, vx, vy, width, height, colors
     end,
     __base = _base_0,
     __name = "Entity"
