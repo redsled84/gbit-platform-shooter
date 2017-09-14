@@ -4,7 +4,7 @@ inspect = require "inspect"
 World = require "world"
 
 Player = require "player"
-player = Player 0, 0, 0, 0, 32, 72
+player = Player 0, 0, 0, 0, 32, 140
 Entity = require "entity"
 entity = Entity 0, 450, 0, 0, 600, 50
 
@@ -15,6 +15,9 @@ World\add player, player.x, player.y, player.width, player.height
 World\add entity, entity.x, entity.y, entity.width, entity.height
 
 {graphics: g} = love
+
+playerImage = g.newImage("Untitled-2.png")
+playerImage\setFilter("nearest", "nearest")
 
 class Game
   new: (title, dimensions) =>
@@ -32,7 +35,8 @@ class Game
     --   item = items[i]
     --   g.rectangle("fill", item.x, item.y, item.width, item.height)
   draw: =>
-    player\draw!
+    love.graphics.setColor(255,255,255)
+    g.draw(playerImage, player.x, player.y, 0, 2)
     entity\draw!
 
     for i = 1, #weapon.bullets
