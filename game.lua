@@ -5,6 +5,8 @@ local Player = require("player")
 local player = Player(0, 0, 0, 0, 32, 72)
 local Entity = require("entity")
 local entity = Entity(0, 450, 0, 0, 600, 50)
+local Weapon = require("weapon")
+local weapon = Weapon(player.x, player.y, 100)
 World:add(player, player.x, player.y, player.width, player.height)
 World:add(entity, entity.x, entity.y, entity.width, entity.height)
 local g
@@ -15,11 +17,19 @@ do
   local _base_0 = {
     update = function(self, dt)
       player:moveWithKeys(dt)
-      return player:updateCollision(dt)
+      player:updateCollision(dt)
+      weapon:updateRateOfFire(dt)
+      weapon:update(dt)
+      weapon.x, weapon.y = player:getCenter()
     end,
     draw = function(self)
       player:draw()
-      return entity:draw()
+      entity:draw()
+      for i = 1, #weapon.bullets do
+        local b
+        b = weapon.bullets[i]
+        g.rectangle("fill", b.x, b.y, b.width, b.height)
+      end
     end,
     keypressed = function(self, key)
       if key == "escape" then
@@ -29,6 +39,9 @@ do
         love.event.quit("restart")
       end
       return player:jump(key)
+    end,
+    mousepressed = function(self, x, y, button)
+      return weapon:shoot(x, y, button)
     end
   }
   _base_0.__index = _base_0

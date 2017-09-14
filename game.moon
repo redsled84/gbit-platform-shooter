@@ -8,8 +8,10 @@ player = Player 0, 0, 0, 0, 32, 72
 Entity = require "entity"
 entity = Entity 0, 450, 0, 0, 600, 50
 
-World\add player, player.x, player.y, player.width, player.height
+Weapon = require "weapon"
+weapon = Weapon player.x, player.y, 100
 
+World\add player, player.x, player.y, player.width, player.height
 World\add entity, entity.x, entity.y, entity.width, entity.height
 
 {graphics: g} = love
@@ -22,6 +24,9 @@ class Game
   update: (dt) =>
     player\moveWithKeys dt
     player\updateCollision dt
+    weapon\updateRateOfFire dt
+    weapon\update dt
+    weapon.x, weapon.y = player\getCenter!
 
     -- for i = 1, #items
     --   item = items[i]
@@ -30,11 +35,19 @@ class Game
     player\draw!
     entity\draw!
 
+    for i = 1, #weapon.bullets
+      local b
+      b = weapon.bullets[i]
+      g.rectangle("fill", b.x, b.y, b.width, b.height)
+
   keypressed: (key) =>
     if key == "escape"
       love.event.quit()
     if key == "r"
       love.event.quit("restart")
     player\jump key
+
+  mousepressed: (x, y, button) =>
+    weapon\shoot x, y, button
 
 return Game

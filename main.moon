@@ -9,3 +9,5 @@ love.load = ->
     game\draw!
   love.keypressed = (key) ->
     game\keypressed key
+  love.mousepressed = (x, y, button) ->
+    game\mousepressed x, y, button

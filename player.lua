@@ -5,6 +5,13 @@ do
   local _obj_0 = love
   g, k = _obj_0.graphics, _obj_0.keyboard
 end
+local collisionFilter
+collisionFilter = function(items, other)
+  if other.__class.__name == "Bullet" then
+    return "cross"
+  end
+  return "slide"
+end
 local Player
 do
   local _class_0
@@ -41,7 +48,7 @@ do
       self.vx, self.vy = vx, vy
     end,
     jump = function(self, key)
-      if key == "space" or key == "w" and self.onGround then
+      if (key == "space" or key == "w") and self.onGround then
         self.vy = self.jumpVelocity
       end
     end,
@@ -49,12 +56,12 @@ do
       local futureX, futureY
       self:updateGravity(dt, 1000, 420)
       futureX, futureY = self:getFuturePos(dt)
-      local goalX, goalY, cols, len = World:move(self, futureX, futureY)
+      local goalX, goalY, cols, len = World:move(self, futureX, futureY, collisionFilter)
       local col
       self.onGround = false
       for i = 1, len do
         col = cols[i]
-        if col.normal.y == -1 then
+        if col.normal.y == -1 and col.other.__class.__name ~= "Bullet" then
           self.onGround = true
           self.vy = 0
         end

@@ -3,6 +3,11 @@ World = require "world"
 -- Inventory = require "inventory"
 {graphics: g, keyboard: k} = love
 
+collisionFilter = (items, other) ->
+  if other.__class.__name == "Bullet"
+    return "cross"
+  return "slide"
+
 class Player extends Entity
   -- inventory: Inventory Pistol!, Rifle!, Shotgun!
   jumpVelocity: -500
@@ -31,22 +36,21 @@ class Player extends Entity
     @vx, @vy = vx, vy
 
   jump: (key) =>
-    if key == "space" or key == "w" and @onGround
+    if (key == "space" or key == "w") and @onGround
       @vy = @jumpVelocity
   updateCollision: (dt) =>
     local futureX, futureY
     @updateGravity dt, 1000, 420
     futureX, futureY = @getFuturePos dt
-    goalX, goalY, cols, len = World\move self, futureX, futureY
+    goalX, goalY, cols, len = World\move self, futureX, futureY, collisionFilter
 
     local col
     @onGround = false
     for i = 1, len
       col = cols[i]
-      if col.normal.y == -1
+      if col.normal.y == -1 and col.other.__class.__name ~= "Bullet"
         @onGround = true
         @vy = 0
-
 
     @x, @y = goalX, goalY
 

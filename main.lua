@@ -13,4 +13,7 @@ love.load = function()
   love.keypressed = function(key)
     return game:keypressed(key)
   end
+  love.mousepressed = function(x, y, button)
+    return game:mousepressed(x, y, button)
+  end
 end
