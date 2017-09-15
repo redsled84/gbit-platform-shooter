@@ -1,17 +1,17 @@
 math.randomseed(os.time())
 local bump, world, inspect
 inspect = require("inspect")
+local g
+g = love.graphics
 local World = require("world")
 local Player = require("player")
 local player = Player(0, 0, 0, 0, 32, 140)
 local Entity = require("entity")
 local entity = Entity(0, 450, 0, 0, 600, 50)
 local Weapon = require("weapon")
-local weapon = Weapon(player.x, player.y, 100)
+local weapon = Weapon(player.x, player.y, 100, g.newImage("m4.png"), nil)
 World:add(player, player.x, player.y, player.width, player.height)
 World:add(entity, entity.x, entity.y, entity.width, entity.height)
-local g
-g = love.graphics
 local playerImage = g.newImage("player.png")
 playerImage:setFilter("nearest", "nearest")
 local cursorImage = g.newImage("cursor.png")
@@ -29,6 +29,7 @@ do
     draw = function(self)
       love.graphics.setColor(255, 255, 255)
       g.draw(playerImage, player.x, player.y, 0, 2)
+      weapon:draw()
       entity:draw()
       for i = 1, #weapon.bullets do
         local b

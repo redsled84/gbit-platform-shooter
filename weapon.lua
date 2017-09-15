@@ -53,16 +53,24 @@ do
         self.bullets[#self.bullets + 1] = bullet
         return World:add(bullet, bullet.x, bullet.y, bullet.width, bullet.height)
       end
+    end,
+    draw = function(self)
+      love.graphics.setColor(255, 255, 255)
+      return love.graphics.draw(self.sprite, self.x, self.y, 0, 1, 1, self.drawOffset.x, self.drawOffset.y)
     end
   }
   _base_0.__index = _base_0
   _class_0 = setmetatable({
-    __init = function(self, x, y, magazineSize, sprayAngle)
+    __init = function(self, x, y, magazineSize, sprite, audioSource, sprayAngle)
       if sprayAngle == nil then
         sprayAngle = math.pi / 300
       end
-      self.x, self.y, self.magazineSize, self.sprayAngle = x, y, magazineSize, sprayAngle
+      self.x, self.y, self.magazineSize, self.sprite, self.audioSource, self.sprayAngle = x, y, magazineSize, sprite, audioSource, sprayAngle
       self.ammoCount = self.magazineSize
+      self.drawOffset = {
+        x = self.sprite:getWidth() / 4,
+        y = self.sprite:getHeight() / 2
+      }
     end,
     __base = _base_0,
     __name = "Weapon"

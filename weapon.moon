@@ -2,8 +2,9 @@ Bullet = require "bullet"
 World = require "world"
 
 class Weapon
-  new: (@x, @y, @magazineSize, @sprayAngle=math.pi/300) =>
+  new: (@x, @y, @magazineSize, @sprite, @audioSource, @sprayAngle=math.pi/300) =>
     @ammoCount = @magazineSize
+    @drawOffset = {x: @sprite\getWidth! / 4, y: @sprite\getHeight! / 2}
   canShoot: true
   rateOfFire: {time: 0, max: .1}
   updateRateOfFire: (dt) =>
@@ -58,5 +59,9 @@ class Weapon
       -- Add bullet to world
       @bullets[#@bullets+1] = bullet
       World\add bullet, bullet.x, bullet.y, bullet.width, bullet.height
+
+  draw: =>
+    love.graphics.setColor 255, 255, 255
+    love.graphics.draw @sprite, @x, @y, 0, 1, 1, @drawOffset.x, @drawOffset.y
 
 return Weapon
