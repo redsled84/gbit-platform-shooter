@@ -59,7 +59,7 @@ do
   _class_0 = setmetatable({
     __init = function(self, x, y, magazineSize, sprayAngle)
       if sprayAngle == nil then
-        sprayAngle = math.pi / 90
+        sprayAngle = math.pi / 300
       end
       self.x, self.y, self.magazineSize, self.sprayAngle = x, y, magazineSize, sprayAngle
       self.ammoCount = self.magazineSize

@@ -18,14 +18,17 @@ World\add entity, entity.x, entity.y, entity.width, entity.height
 
 {graphics: g} = love
 
-playerImage = g.newImage("Untitled-2.png")
-playerImage\setFilter("nearest", "nearest")
+playerImage = g.newImage "player.png"
+playerImage\setFilter "nearest", "nearest"
+cursorImage = g.newImage "cursor.png"
 
 class Game
   new: (title, dimensions) =>
     love.window.setTitle title
     love.window.setMode dimensions[1], dimensions[2]
     love.graphics.setBackgroundColor 255, 255, 255
+    cursor = love.mouse.newCursor "cursor.png", 0, 0
+    love.mouse.setCursor cursor
   update: (dt) =>
     player\moveWithKeys dt
     player\updateCollision dt
@@ -33,9 +36,6 @@ class Game
     weapon\update dt
     weapon.x, weapon.y = player\getCenter!
 
-    -- for i = 1, #items
-    --   item = items[i]
-    --   g.rectangle("fill", item.x, item.y, item.width, item.height)
   draw: =>
     love.graphics.setColor(255,255,255)
     g.draw(playerImage, player.x, player.y, 0, 2)
@@ -54,6 +54,6 @@ class Game
     player\jump key
 
   mousepressed: (x, y, button) =>
-    weapon\shoot x, y, button
+    weapon\shoot x + cursorImage\getWidth! / 2, y + cursorImage\getHeight! / 2, button
 
 return Game

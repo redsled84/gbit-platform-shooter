@@ -6,7 +6,7 @@ collisionFilter = (items, other) ->
   return "slide"
 
 class Bullet
-  new: (@x, @y, @goalX, @goalY, @speed, @width, @height, @damage, @bulletDrop=.3) =>
+  new: (@x, @y, @goalX, @goalY, @speed, @width, @height, @damage, @bulletDrop=.1) =>
     @vy = 0
   calculateDirections: =>
     @dx = @goalX - @x

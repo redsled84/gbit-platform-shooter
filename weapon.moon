@@ -2,7 +2,7 @@ Bullet = require "bullet"
 World = require "world"
 
 class Weapon
-  new: (@x, @y, @magazineSize, @sprayAngle=math.pi/90) =>
+  new: (@x, @y, @magazineSize, @sprayAngle=math.pi/300) =>
     @ammoCount = @magazineSize
   canShoot: true
   rateOfFire: {time: 0, max: .1}

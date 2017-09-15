@@ -33,7 +33,7 @@ do
   _class_0 = setmetatable({
     __init = function(self, x, y, goalX, goalY, speed, width, height, damage, bulletDrop)
       if bulletDrop == nil then
-        bulletDrop = .3
+        bulletDrop = .1
       end
       self.x, self.y, self.goalX, self.goalY, self.speed, self.width, self.height, self.damage, self.bulletDrop = x, y, goalX, goalY, speed, width, height, damage, bulletDrop
       self.vy = 0

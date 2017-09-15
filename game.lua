@@ -12,8 +12,9 @@ World:add(player, player.x, player.y, player.width, player.height)
 World:add(entity, entity.x, entity.y, entity.width, entity.height)
 local g
 g = love.graphics
-local playerImage = g.newImage("Untitled-2.png")
+local playerImage = g.newImage("player.png")
 playerImage:setFilter("nearest", "nearest")
+local cursorImage = g.newImage("cursor.png")
 local Game
 do
   local _class_0
@@ -45,7 +46,7 @@ do
       return player:jump(key)
     end,
     mousepressed = function(self, x, y, button)
-      return weapon:shoot(x, y, button)
+      return weapon:shoot(x + cursorImage:getWidth() / 2, y + cursorImage:getHeight() / 2, button)
     end
   }
   _base_0.__index = _base_0
@@ -53,7 +54,9 @@ do
     __init = function(self, title, dimensions)
       love.window.setTitle(title)
       love.window.setMode(dimensions[1], dimensions[2])
-      return love.graphics.setBackgroundColor(255, 255, 255)
+      love.graphics.setBackgroundColor(255, 255, 255)
+      local cursor = love.mouse.newCursor("cursor.png", 0, 0)
+      return love.mouse.setCursor(cursor)
     end,
     __base = _base_0,
     __name = "Game"
