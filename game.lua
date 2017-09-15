@@ -1,3 +1,4 @@
+math.randomseed(os.time())
 local bump, world, inspect
 inspect = require("inspect")
 local World = require("world")

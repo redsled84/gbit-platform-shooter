@@ -11,15 +11,17 @@ do
   local _class_0
   local _base_0 = {
     calculateDirections = function(self)
-      local distance
-      distance = math.sqrt(math.pow(self.goalX - self.x, 2) + math.pow(self.goalY - self.y, 2))
-      self.directionX = (self.goalX - self.x) / distance
-      self.directionY = (self.goalY - self.y) / distance
+      self.dx = self.goalX - self.x
+      self.dy = self.goalY - self.y
+      self.distance = math.sqrt(math.pow(self.goalX - self.x, 2) + math.pow(self.goalY - self.y, 2))
+      self.directionX = (self.dx) / self.distance
+      self.directionY = (self.dy) / self.distance
     end,
     update = function(self, dt)
+      self.vy = self.vy + (self.bulletDrop * dt)
       local futureX, futureY
       futureX = self.x + self.directionX * self.speed * dt
-      futureY = self.y + self.directionY * self.speed * dt
+      futureY = self.y + self.vy + self.directionY * self.speed * dt
       local goalX, goalY, cols, len
       goalX, goalY, cols, len = World:move(self, futureX, futureY, collisionFilter)
       self.x = goalX
@@ -29,8 +31,12 @@ do
   }
   _base_0.__index = _base_0
   _class_0 = setmetatable({
-    __init = function(self, x, y, goalX, goalY, speed, width, height, damage)
-      self.x, self.y, self.goalX, self.goalY, self.speed, self.width, self.height, self.damage = x, y, goalX, goalY, speed, width, height, damage
+    __init = function(self, x, y, goalX, goalY, speed, width, height, damage, bulletDrop)
+      if bulletDrop == nil then
+        bulletDrop = .3
+      end
+      self.x, self.y, self.goalX, self.goalY, self.speed, self.width, self.height, self.damage, self.bulletDrop = x, y, goalX, goalY, speed, width, height, damage, bulletDrop
+      self.vy = 0
     end,
     __base = _base_0,
     __name = "Bullet"

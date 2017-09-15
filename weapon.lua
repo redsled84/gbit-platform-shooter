@@ -34,12 +34,21 @@ do
         end
       end
     end,
+    getVariableBulletVectors = function(self, bullet)
+      local angle, goalX, goalY
+      angle = math.atan2(bullet.dy, bullet.dx) + math.pi
+      local randomAngle = math.random(1000 * (angle - self.sprayAngle), 1000 * (angle + self.sprayAngle)) / 1000
+      return -bullet.distance * math.cos(randomAngle) + self.x, -bullet.distance * math.sin(randomAngle) + self.y
+    end,
     shoot = function(self, x, y, button, world)
       if button == 1 and self.canShoot and self.ammoCount > 0 then
-        local bullet
+        local bullet, bulletSize
         self.canShoot = false
         self.ammoCount = self.ammoCount - 1
-        bullet = Bullet(self.x, self.y, x, y, 1000, 12, 12)
+        bulletSize = 8
+        bullet = Bullet(self.x, self.y, x - bulletSize, y - bulletSize, 1000, bulletSize, bulletSize)
+        bullet:calculateDirections()
+        bullet.goalX, bullet.goalY = self:getVariableBulletVectors(bullet)
         bullet:calculateDirections()
         self.bullets[#self.bullets + 1] = bullet
         return World:add(bullet, bullet.x, bullet.y, bullet.width, bullet.height)
@@ -48,11 +57,11 @@ do
   }
   _base_0.__index = _base_0
   _class_0 = setmetatable({
-    __init = function(self, x, y, magazineSize, accuracy)
-      if accuracy == nil then
-        accuracy = 1
+    __init = function(self, x, y, magazineSize, sprayAngle)
+      if sprayAngle == nil then
+        sprayAngle = math.pi / 90
       end
-      self.x, self.y, self.magazineSize, self.accuracy = x, y, magazineSize, accuracy
+      self.x, self.y, self.magazineSize, self.sprayAngle = x, y, magazineSize, sprayAngle
       self.ammoCount = self.magazineSize
     end,
     __base = _base_0,

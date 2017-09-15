@@ -1,3 +1,5 @@
+math.randomseed os.time!
+
 local bump, world, inspect
 inspect = require "inspect"
 
