@@ -67,6 +67,17 @@ do
         end
       end
       self.x, self.y = goalX, goalY
+    end,
+    draw = function(self)
+      g.setColor(255, 255, 255)
+      local angle, x, y
+      x, y = self:getCenter()
+      angle = math.atan2(y - love.mouse.getY() - 8, x - love.mouse.getX() - 8) + math.pi
+      if angle < 3 * math.pi / 2 and angle > math.pi / 2 then
+        return g.draw(self.sprite, self.x, self.y, 0, -2, 2, self.width / 2)
+      else
+        return g.draw(self.sprite, self.x, self.y, 0, 2, 2)
+      end
     end
   }
   _base_0.__index = _base_0

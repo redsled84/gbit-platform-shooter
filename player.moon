@@ -53,6 +53,15 @@ class Player extends Entity
         @vy = 0
 
     @x, @y = goalX, goalY
+  draw: =>
+    g.setColor 255, 255, 255
+    local angle, x, y
+    x, y = @getCenter!
+    angle = math.atan2(y-love.mouse.getY()-8, x-love.mouse.getX()-8) + math.pi
+    if angle < 3 * math.pi / 2 and angle > math.pi / 2
+      g.draw @sprite, @x, @y, 0, -2, 2, @width / 2
+    else
+      g.draw @sprite, @x, @y, 0, 2, 2
 
 
 return Player

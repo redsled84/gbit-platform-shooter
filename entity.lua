@@ -29,7 +29,7 @@ do
   }
   _base_0.__index = _base_0
   _class_0 = setmetatable({
-    __init = function(self, x, y, vx, vy, width, height, colors)
+    __init = function(self, x, y, vx, vy, width, height, colors, sprite)
       if vx == nil then
         vx = 0
       end
@@ -49,7 +49,7 @@ do
           0
         }
       end
-      self.x, self.y, self.vx, self.vy, self.width, self.height, self.colors = x, y, vx, vy, width, height, colors
+      self.x, self.y, self.vx, self.vy, self.width, self.height, self.colors, self.sprite = x, y, vx, vy, width, height, colors, sprite
     end,
     __base = _base_0,
     __name = "Entity"

@@ -7,27 +7,28 @@ inspect = require "inspect"
 
 World = require "world"
 
+playerImage = g.newImage "player.png"
+playerImage\setFilter "nearest", "nearest"
 Player = require "player"
-player = Player 0, 0, 0, 0, 32, 140
+player = Player 0, 0, 0, 0, playerImage\getWidth!*2, playerImage\getHeight!*2-4, nil, playerImage
 Entity = require "entity"
 entity = Entity 0, 450, 0, 0, 600, 50
+entity2 = Entity 600, 200, 0, 0, 50, 150
 
 Weapon = require "weapon"
 weapon = Weapon player.x, player.y, 100, g.newImage("m4.png"), nil
 
 World\add player, player.x, player.y, player.width, player.height
 World\add entity, entity.x, entity.y, entity.width, entity.height
+World\add entity2, entity2.x, entity2.y, entity2.width, entity2.height
 
-
-playerImage = g.newImage "player.png"
-playerImage\setFilter "nearest", "nearest"
 cursorImage = g.newImage "cursor.png"
 
 class Game
   new: (title, dimensions) =>
     love.window.setTitle title
     love.window.setMode dimensions[1], dimensions[2]
-    love.graphics.setBackgroundColor 255, 255, 255
+    g.setBackgroundColor 255, 255, 255
     cursor = love.mouse.newCursor "cursor.png", 0, 0
     love.mouse.setCursor cursor
   update: (dt) =>
@@ -36,12 +37,13 @@ class Game
     weapon\updateRateOfFire dt
     weapon\update dt
     weapon.x, weapon.y = player\getCenter!
+    weapon\shootAuto!
 
   draw: =>
-    love.graphics.setColor(255,255,255)
-    g.draw(playerImage, player.x, player.y, 0, 2)
+    player\draw!
     weapon\draw!
     entity\draw!
+    entity2\draw!
 
     for i = 1, #weapon.bullets
       local b
@@ -56,6 +58,6 @@ class Game
     player\jump key
 
   mousepressed: (x, y, button) =>
-    weapon\shoot x + cursorImage\getWidth! / 2, y + cursorImage\getHeight! / 2, button
+    weapon\shootSemi x + cursorImage\getWidth! / 2, y + cursorImage\getHeight! / 2, button
 
 return Game

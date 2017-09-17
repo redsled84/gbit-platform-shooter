@@ -2,7 +2,7 @@ World = require "world"
 {graphics: g} = love
 
 class Entity
-  new: (@x, @y, @vx=0, @vy=0, @width=100, @height=100, @colors={0, 0, 0}) =>
+  new: (@x, @y, @vx=0, @vy=0, @width=100, @height=100, @colors={0, 0, 0}, @sprite) =>
   draw: =>
     g.setColor(unpack @colors)
     g.rectangle("fill", @x, @y, @width, @height)

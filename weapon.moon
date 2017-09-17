@@ -1,10 +1,16 @@
 Bullet = require "bullet"
 World = require "world"
 
+shootSound = love.audio.newSource "shoot.wav", "static"
+shootSound\setVolume .5
+
 class Weapon
-  new: (@x, @y, @magazineSize, @sprite, @audioSource, @sprayAngle=math.pi/300) =>
+  new: (@x, @y, @magazineSize, @sprite, @audioSource, @sprayAngle=math.pi/100) =>
     @ammoCount = @magazineSize
     @drawOffset = {x: @sprite\getWidth! / 4, y: @sprite\getHeight! / 2}
+    @fireControl = "auto"
+    @bulletSpeed = 2500
+    @bulletSize = 6
   canShoot: true
   rateOfFire: {time: 0, max: .1}
   updateRateOfFire: (dt) =>
@@ -37,31 +43,61 @@ class Weapon
     -- Polar coordinates are found like this:
     --   x = r * cos(theta)
     --   y = r * sin(theta)
-    -- But we aren't calculating at the origin of the window, we need to translate the points to be relative to the weapon
+    -- But we aren't calculating at the origin of the window, we need to translate the points
+    -- to be relative to the weapon
     -- Thus:
     --   x = r * cos(theta) + weapon.x
     --   y = r * sin(theta) + weapon.y
     return -bullet.distance * math.cos(randomAngle) + @x, -bullet.distance * math.sin(randomAngle) + @y
 
-  shoot: (x, y, button, world) =>
-    if button == 1 and @canShoot and @ammoCount > 0
-      local bullet, bulletSize
-      @canShoot = false
-      @ammoCount -= 1
+  shootBullet: (x, y) =>
+    local bullet
+    @canShoot = false
+    @ammoCount -= 1
 
-      bulletSize = 8
-      bullet = Bullet @x, @y, x-bulletSize, y-bulletSize, 1000, bulletSize, bulletSize
-      bullet\calculateDirections!
-      bullet.goalX, bullet.goalY = @getVariableBulletVectors bullet
-      -- print @x, @y, -bullet.distance * math.cos(angle) + @x, 
-      bullet\calculateDirections!
+    bullet = Bullet @x-@bulletSize, @y-@bulletSize, x-@bulletSize, y-@bulletSize,
+      @bulletSpeed, @bulletSize, @bulletSize
+    bullet\calculateDirections!
+    bullet.goalX, bullet.goalY = @getVariableBulletVectors bullet
+    -- print @x, @y, -bullet.distance * math.cos(angle) + @x, 
+    bullet\calculateDirections!
 
-      -- Add bullet to world
-      @bullets[#@bullets+1] = bullet
-      World\add bullet, bullet.x, bullet.y, bullet.width, bullet.height
+    -- Add bullet to world
+    @bullets[#@bullets+1] = bullet
+    World\add bullet, bullet.x, bullet.y, bullet.width, bullet.height
+
+    if shootSound\isPlaying!
+      shootSound\stop!
+      shootSound\play!
+    else
+      shootSound\play!
+
+  shootAuto: =>
+    local x, y
+    x = love.mouse.getX! + 8
+    y = love.mouse.getY! + 8
+    if love.mouse.isDown(1) and @canShoot and @ammoCount > 0 and @fireControl == "auto"
+      @shootBullet x, y
+
+  shootSemi: (x, y, button) =>
+    if button == 1 and @canShoot and @ammoCount > 0 and @fireControl == "semi"
+      @shootBullet x, y
 
   draw: =>
     love.graphics.setColor 255, 255, 255
-    love.graphics.draw @sprite, @x, @y, 0, 1, 1, @drawOffset.x, @drawOffset.y
+    local angle, scale
+    scale = .25
+    angle = math.atan2(@y-love.mouse.getY()-8, @x-love.mouse.getX()-8) + math.pi
+  
+    -- if angle < 3 * math.pi / 2 and angle > math.pi / 2
+    --   love.graphics.draw @sprite, @x, @y, angle, scale, -scale, @drawOffset.x, @drawOffset.y
+    -- else
+    --   love.graphics.draw @sprite, @x, @y, angle, scale, scale, @drawOffset.x, @drawOffset.y
+    if angle < 3 * math.pi / 2 and angle > math.pi / 2
+      love.graphics.draw @sprite, @x, @y, angle, 1, -1, @drawOffset.x, @drawOffset.y
+    else
+      love.graphics.draw @sprite, @x, @y, angle, 1, 1, @drawOffset.x, @drawOffset.y
+    love.graphics.setColor 0, 0, 0
+    love.graphics.print tostring @ammoCount
 
 return Weapon
