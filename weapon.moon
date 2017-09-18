@@ -1,25 +1,31 @@
 Bullet = require "bullet"
 World = require "world"
 
+{graphics: g} = love
+
 shootSound = love.audio.newSource "shoot.wav", "static"
-shootSound\setVolume .5
+shootSound\setVolume .2
 
 class Weapon
-  new: (@x, @y, @magazineSize, @sprite, @audioSource, @sprayAngle=math.pi/100) =>
+  new: (@x, @y, @magazineSize, @sprite, @audioSource, @sprayAngle=math.pi/250) =>
     @ammoCount = @magazineSize
     @drawOffset = {x: @sprite\getWidth! / 4, y: @sprite\getHeight! / 2}
     @fireControl = "auto"
-    @bulletSpeed = 2500
+    @bulletSpeed = 2700
     @bulletSize = 6
+
+  bullets: {}
   canShoot: true
-  rateOfFire: {time: 0, max: .1}
+  rateOfFire: {time: 0, max: .12}
+
   updateRateOfFire: (dt) =>
     if @rateOfFire.time < @rateOfFire.max and not @canShoot
       @rateOfFire.time += dt
     else
       @rateOfFire.time = 0
       @canShoot = true
-  bullets: {}
+
+
   update: (dt) =>
     for i = #@bullets, 1, -1
       local b
@@ -72,32 +78,32 @@ class Weapon
     else
       shootSound\play!
 
-  shootAuto: =>
-    local x, y
-    x = love.mouse.getX! + 8
-    y = love.mouse.getY! + 8
+  shootAuto: (x, y) =>
+    local targetX, targetY
+    targetX = x + 8
+    targetY = y + 8
     if love.mouse.isDown(1) and @canShoot and @ammoCount > 0 and @fireControl == "auto"
-      @shootBullet x, y
+      @shootBullet targetX, targetY
 
   shootSemi: (x, y, button) =>
     if button == 1 and @canShoot and @ammoCount > 0 and @fireControl == "semi"
       @shootBullet x, y
 
-  draw: =>
-    love.graphics.setColor 255, 255, 255
+  draw: (x, y) =>
+    g.setColor 255, 255, 255
     local angle, scale
-    scale = .25
-    angle = math.atan2(@y-love.mouse.getY()-8, @x-love.mouse.getX()-8) + math.pi
+    scale = .65
+    angle = math.atan2(@y - y, @x - x) + math.pi
   
-    -- if angle < 3 * math.pi / 2 and angle > math.pi / 2
-    --   love.graphics.draw @sprite, @x, @y, angle, scale, -scale, @drawOffset.x, @drawOffset.y
-    -- else
-    --   love.graphics.draw @sprite, @x, @y, angle, scale, scale, @drawOffset.x, @drawOffset.y
+    g.setColor 0, 0, 0
     if angle < 3 * math.pi / 2 and angle > math.pi / 2
-      love.graphics.draw @sprite, @x, @y, angle, 1, -1, @drawOffset.x, @drawOffset.y
+      g.draw @sprite, @x, @y, angle, scale, -scale, @drawOffset.x, @drawOffset.y
     else
-      love.graphics.draw @sprite, @x, @y, angle, 1, 1, @drawOffset.x, @drawOffset.y
-    love.graphics.setColor 0, 0, 0
-    love.graphics.print tostring @ammoCount
+      g.draw @sprite, @x, @y, angle, scale, scale, @drawOffset.x, @drawOffset.y
+    -- if angle < 3 * math.pi / 2 and angle > math.pi / 2
+    --   g.draw @sprite, @x, @y, angle, 1, -1, @drawOffset.x, @drawOffset.y
+    -- else
+    --   g.draw @sprite, @x, @y, angle, 1, 1, @drawOffset.x, @drawOffset.y
+    g.print tostring @ammoCount
 
 return Weapon

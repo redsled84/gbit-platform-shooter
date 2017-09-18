@@ -1,5 +1,5 @@
 local Game = require("game")
-local game = Game("Mission YoYo", {
+local game = Game("Mission JPL3000", {
   1280,
   720
 })

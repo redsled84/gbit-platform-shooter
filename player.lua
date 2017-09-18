@@ -12,17 +12,19 @@ collisionFilter = function(items, other)
   end
   return "slide"
 end
+local gravity, terminalVelocity
+gravity, terminalVelocity = 2500, 800
+local vx, vy, frc, dec, top, low
+local acc
+frc, acc, dec, top, low = 1400, 1000, 8000, 600, 50
 local Player
 do
   local _class_0
   local _parent_0 = Entity
   local _base_0 = {
-    jumpVelocity = -500,
+    jumpVelocity = -1200,
     onGround = false,
     moveWithKeys = function(self, dt)
-      local vx, vy, frc, dec, top, low
-      local acc
-      frc, acc, dec, top, low = 1400, 1000, 8000, 600, 50
       vx, vy = self.vx, self.vy
       if k.isDown('a') then
         if vx > 0 then
@@ -54,25 +56,30 @@ do
     end,
     updateCollision = function(self, dt)
       local futureX, futureY
-      self:updateGravity(dt, 1000, 420)
+      self:updateGravity(dt, gravity, terminalVelocity)
       futureX, futureY = self:getFuturePos(dt)
       local goalX, goalY, cols, len = World:move(self, futureX, futureY, collisionFilter)
       local col
       self.onGround = false
       for i = 1, len do
         col = cols[i]
-        if col.normal.y == -1 and col.other.__class.__name ~= "Bullet" then
-          self.onGround = true
-          self.vy = 0
+        if col.other.__class.__name ~= "Bullet" then
+          if col.normal.y == -1 or col.normal.y == 1 then
+            self.onGround = true
+            self.vy = 0
+          end
+          if col.normal.x == -1 or col.normal.x == 1 then
+            self.vx = 0
+          end
         end
       end
       self.x, self.y = goalX, goalY
     end,
-    draw = function(self)
+    draw = function(self, mouseX, mouseY)
       g.setColor(255, 255, 255)
       local angle, x, y
       x, y = self:getCenter()
-      angle = math.atan2(y - love.mouse.getY() - 8, x - love.mouse.getX() - 8) + math.pi
+      angle = math.atan2(y - mouseY, x - mouseX) + math.pi
       if angle < 3 * math.pi / 2 and angle > math.pi / 2 then
         return g.draw(self.sprite, self.x, self.y, 0, -2, 2, self.width / 2)
       else

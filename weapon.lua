@@ -1,15 +1,18 @@
 local Bullet = require("bullet")
 local World = require("world")
+local g
+g = love.graphics
 local shootSound = love.audio.newSource("shoot.wav", "static")
-shootSound:setVolume(.5)
+shootSound:setVolume(.2)
 local Weapon
 do
   local _class_0
   local _base_0 = {
+    bullets = { },
     canShoot = true,
     rateOfFire = {
       time = 0,
-      max = .1
+      max = .12
     },
     updateRateOfFire = function(self, dt)
       if self.rateOfFire.time < self.rateOfFire.max and not self.canShoot then
@@ -19,7 +22,6 @@ do
         self.canShoot = true
       end
     end,
-    bullets = { },
     update = function(self, dt)
       for i = #self.bullets, 1, -1 do
         local b
@@ -59,12 +61,12 @@ do
         return shootSound:play()
       end
     end,
-    shootAuto = function(self)
-      local x, y
-      x = love.mouse.getX() + 8
-      y = love.mouse.getY() + 8
+    shootAuto = function(self, x, y)
+      local targetX, targetY
+      targetX = x + 8
+      targetY = y + 8
       if love.mouse.isDown(1) and self.canShoot and self.ammoCount > 0 and self.fireControl == "auto" then
-        return self:shootBullet(x, y)
+        return self:shootBullet(targetX, targetY)
       end
     end,
     shootSemi = function(self, x, y, button)
@@ -72,25 +74,25 @@ do
         return self:shootBullet(x, y)
       end
     end,
-    draw = function(self)
-      love.graphics.setColor(255, 255, 255)
+    draw = function(self, x, y)
+      g.setColor(255, 255, 255)
       local angle, scale
-      scale = .25
-      angle = math.atan2(self.y - love.mouse.getY() - 8, self.x - love.mouse.getX() - 8) + math.pi
+      scale = .65
+      angle = math.atan2(self.y - y, self.x - x) + math.pi
+      g.setColor(0, 0, 0)
       if angle < 3 * math.pi / 2 and angle > math.pi / 2 then
-        love.graphics.draw(self.sprite, self.x, self.y, angle, 1, -1, self.drawOffset.x, self.drawOffset.y)
+        g.draw(self.sprite, self.x, self.y, angle, scale, -scale, self.drawOffset.x, self.drawOffset.y)
       else
-        love.graphics.draw(self.sprite, self.x, self.y, angle, 1, 1, self.drawOffset.x, self.drawOffset.y)
+        g.draw(self.sprite, self.x, self.y, angle, scale, scale, self.drawOffset.x, self.drawOffset.y)
       end
-      love.graphics.setColor(0, 0, 0)
-      return love.graphics.print(tostring(self.ammoCount))
+      return g.print(tostring(self.ammoCount))
     end
   }
   _base_0.__index = _base_0
   _class_0 = setmetatable({
     __init = function(self, x, y, magazineSize, sprite, audioSource, sprayAngle)
       if sprayAngle == nil then
-        sprayAngle = math.pi / 100
+        sprayAngle = math.pi / 250
       end
       self.x, self.y, self.magazineSize, self.sprite, self.audioSource, self.sprayAngle = x, y, magazineSize, sprite, audioSource, sprayAngle
       self.ammoCount = self.magazineSize
@@ -99,7 +101,7 @@ do
         y = self.sprite:getHeight() / 2
       }
       self.fireControl = "auto"
-      self.bulletSpeed = 2500
+      self.bulletSpeed = 2700
       self.bulletSize = 6
     end,
     __base = _base_0,

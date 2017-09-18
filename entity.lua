@@ -1,4 +1,3 @@
-local World = require("world")
 local g
 g = love.graphics
 local Entity

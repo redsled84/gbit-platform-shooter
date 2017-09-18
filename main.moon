@@ -1,6 +1,6 @@
 Game = require "game"
 
-game = Game "Mission YoYo", {1280, 720}
+game = Game "Mission JPL3000", {1280, 720}
 
 love.load = ->
   love.update = (dt) ->

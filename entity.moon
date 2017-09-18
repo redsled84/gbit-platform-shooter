@@ -1,4 +1,3 @@
-World = require "world"
 {graphics: g} = love
 
 class Entity
