@@ -7,15 +7,15 @@ local World = require("world")
 local playerImage = g.newImage("player.png")
 playerImage:setFilter("nearest", "nearest")
 local Player = require("player")
-local player = Player(0, 0, 0, 0, playerImage:getWidth() * 2, playerImage:getHeight() * 2 - 4, nil, playerImage)
+local player = Player(256, 256, 0, 0, playerImage:getWidth() * 2, playerImage:getHeight() * 2 - 4, nil, playerImage)
 local Entity = require("entity")
-local entity = Entity(0, 450, 0, 0, 600, 50)
-local entity2 = Entity(600, 200, 0, 0, 50, 150)
+local Camera = require("camera")
+local cam = Camera(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
 local Weapon = require("weapon")
 local weapon = Weapon(player.x, player.y, 100, g.newImage("m4.png"), nil)
 World:add(player, player.x, player.y, player.width, player.height)
-World:add(entity, entity.x, entity.y, entity.width, entity.height)
-World:add(entity2, entity2.x, entity2.y, entity2.width, entity2.height)
+local Level = require("level")
+local level1 = Level()
 local cursorImage = g.newImage("cursor.png")
 local Game
 do
@@ -27,18 +27,20 @@ do
       weapon:updateRateOfFire(dt)
       weapon:update(dt)
       weapon.x, weapon.y = player:getCenter()
-      return weapon:shootAuto()
+      weapon:shootAuto()
+      return cam:lookAt(player.x, player.y)
     end,
     draw = function(self)
+      cam:attach()
       player:draw()
       weapon:draw()
-      entity:draw()
-      entity2:draw()
+      level1:draw()
       for i = 1, #weapon.bullets do
         local b
         b = weapon.bullets[i]
         g.rectangle("fill", b.x, b.y, b.width, b.height)
       end
+      return cam:detach()
     end,
     keypressed = function(self, key)
       if key == "escape" then

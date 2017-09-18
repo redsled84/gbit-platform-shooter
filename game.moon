@@ -10,17 +10,19 @@ World = require "world"
 playerImage = g.newImage "player.png"
 playerImage\setFilter "nearest", "nearest"
 Player = require "player"
-player = Player 0, 0, 0, 0, playerImage\getWidth!*2, playerImage\getHeight!*2-4, nil, playerImage
+player = Player 256, 256, 0, 0, playerImage\getWidth!*2, playerImage\getHeight!*2-4, nil, playerImage
 Entity = require "entity"
-entity = Entity 0, 450, 0, 0, 600, 50
-entity2 = Entity 600, 200, 0, 0, 50, 150
+
+Camera = require "camera"
+cam = Camera(love.graphics.getWidth! / 2, love.graphics.getHeight! / 2)
 
 Weapon = require "weapon"
 weapon = Weapon player.x, player.y, 100, g.newImage("m4.png"), nil
 
 World\add player, player.x, player.y, player.width, player.height
-World\add entity, entity.x, entity.y, entity.width, entity.height
-World\add entity2, entity2.x, entity2.y, entity2.width, entity2.height
+
+Level = require "level"
+level1 = Level!
 
 cursorImage = g.newImage "cursor.png"
 
@@ -38,17 +40,19 @@ class Game
     weapon\update dt
     weapon.x, weapon.y = player\getCenter!
     weapon\shootAuto!
+    cam\lookAt player.x, player.y
 
   draw: =>
+    cam\attach!
     player\draw!
     weapon\draw!
-    entity\draw!
-    entity2\draw!
+    level1\draw!
 
     for i = 1, #weapon.bullets
       local b
       b = weapon.bullets[i]
       g.rectangle("fill", b.x, b.y, b.width, b.height)
+    cam\detach!
 
   keypressed: (key) =>
     if key == "escape"
