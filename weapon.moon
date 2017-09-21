@@ -9,10 +9,14 @@ shootSound\setVolume .2
 class Weapon
   new: (@x, @y, @magazineSize, @sprite, @audioSource, @sprayAngle=math.pi/250) =>
     @ammoCount = @magazineSize
-    @drawOffset = {x: @sprite\getWidth! / 4, y: @sprite\getHeight! / 2}
+    @drawOffset = {
+      x: @sprite\getWidth! / 4,
+      y: @sprite\getHeight! / 2
+    }
     @fireControl = "auto"
     @bulletSpeed = 2700
     @bulletSize = 6
+    @damage = 20
 
   bullets: {}
   canShoot: true
@@ -35,6 +39,8 @@ class Weapon
       for j = len, 1, -1
         col = cols[j]
         if col.other.__class.__name ~= "Player"
+          if col.other.__class.__name == "Enemy"
+            col.other.__class\damage @damage
           World\remove b
           table.remove @bullets, i
           break

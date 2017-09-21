@@ -1,3 +1,4 @@
+local World = require("world")
 local g
 g = love.graphics
 local Entity
@@ -24,6 +25,12 @@ do
     end,
     getFuturePos = function(self, dt)
       return self.x + self.vx * dt, self.y + self.vy * dt
+    end,
+    getCollisionInfo = function(self, dt, collisionFilter)
+      local futureX, futureY
+      futureX, futureY = self:getFuturePos(dt)
+      local goalX, goalY, cols, len = World:move(self, futureX, futureY, collisionFilter)
+      return goalX, goalY, cols, len
     end
   }
   _base_0.__index = _base_0
@@ -49,6 +56,7 @@ do
         }
       end
       self.x, self.y, self.vx, self.vy, self.width, self.height, self.colors, self.sprite = x, y, vx, vy, width, height, colors, sprite
+      return World:add(self, self.x, self.y, self.width, self.height)
     end,
     __base = _base_0,
     __name = "Entity"

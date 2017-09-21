@@ -4,6 +4,7 @@ local bump, world, inspect
 inspect = require "inspect"
 
 Camera = require "camera"
+Enemy = require "enemy"
 Level = require "level"
 Player = require "player"
 Weapon = require "weapon"
@@ -20,7 +21,8 @@ weapon = Weapon 0, 0, 100, g.newImage("m4.png")
 playerImage = g.newImage "player.png"
 playerImage\setFilter "nearest", "nearest"
 player = Player 256, 256, 0, 0, playerImage\getWidth!*2, playerImage\getHeight!*2-4, nil, playerImage
-World\add player, player.x, player.y, player.width, player.height
+
+enemy = Enemy {{x: 400, y: 256}}, playerImage, 50
 
 cursorImage = g.newImage "cursor.png"
 
@@ -45,6 +47,8 @@ class Game
     weapon.x, weapon.y = player\getCenter!
     weapon\shootAuto mouseX, mouseY
 
+    enemy\update dt
+
     cam\lookAt player.x, player.y
 
   draw: =>
@@ -62,6 +66,8 @@ class Game
         g.rectangle("fill", b.x, b.y, b.width, b.height)
     weapon\draw mouseX, mouseY
 
+    g.setColor 255, 0, 0
+    enemy\draw!
 
     cam\detach!
 

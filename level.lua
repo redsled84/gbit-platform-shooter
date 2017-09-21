@@ -222,7 +222,6 @@ do
           n = self.grid[y][x]
           if n == 1 then
             obj = Entity(x * self.tileSize, y * self.tileSize, 0, 0, self.tileSize, self.tileSize)
-            World:add(obj, obj.x, obj.y, obj.width, obj.height)
             self.objects[#self.objects + 1] = obj
           end
         end

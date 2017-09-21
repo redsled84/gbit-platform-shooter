@@ -55,10 +55,9 @@ do
       end
     end,
     updateCollision = function(self, dt)
-      local futureX, futureY
       self:updateGravity(dt, gravity, terminalVelocity)
-      futureX, futureY = self:getFuturePos(dt)
-      local goalX, goalY, cols, len = World:move(self, futureX, futureY, collisionFilter)
+      local goalX, goalY, cols, len
+      goalX, goalY, cols, len = self:getCollisionInfo(dt, collisionFilter)
       local col
       self.onGround = false
       for i = 1, len do

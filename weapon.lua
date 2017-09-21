@@ -31,6 +31,9 @@ do
         for j = len, 1, -1 do
           col = cols[j]
           if col.other.__class.__name ~= "Player" then
+            if col.other.__class.__name == "Enemy" then
+              col.other.__class:damage(self.damage)
+            end
             World:remove(b)
             table.remove(self.bullets, i)
             break
@@ -103,6 +106,7 @@ do
       self.fireControl = "auto"
       self.bulletSpeed = 2700
       self.bulletSize = 6
+      self.damage = 20
     end,
     __base = _base_0,
     __name = "Weapon"

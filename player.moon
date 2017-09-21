@@ -43,10 +43,9 @@ class Player extends Entity
     if (key == "space" or key == "w") and @onGround
       @vy = @jumpVelocity
   updateCollision: (dt) =>
-    local futureX, futureY
     @updateGravity dt, gravity, terminalVelocity
-    futureX, futureY = @getFuturePos dt
-    goalX, goalY, cols, len = World\move self, futureX, futureY, collisionFilter
+    local goalX, goalY, cols, len
+    goalX, goalY, cols, len = @getCollisionInfo dt, collisionFilter
 
     local col
     @onGround = false

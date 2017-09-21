@@ -2,6 +2,7 @@ math.randomseed(os.time())
 local bump, world, inspect
 inspect = require("inspect")
 local Camera = require("camera")
+local Enemy = require("enemy")
 local Level = require("level")
 local Player = require("player")
 local Weapon = require("weapon")
@@ -14,7 +15,12 @@ local weapon = Weapon(0, 0, 100, g.newImage("m4.png"))
 local playerImage = g.newImage("player.png")
 playerImage:setFilter("nearest", "nearest")
 local player = Player(256, 256, 0, 0, playerImage:getWidth() * 2, playerImage:getHeight() * 2 - 4, nil, playerImage)
-World:add(player, player.x, player.y, player.width, player.height)
+local enemy = Enemy({
+  {
+    x = 400,
+    y = 256
+  }
+}, playerImage, 50)
 local cursorImage = g.newImage("cursor.png")
 local mouseX, mouseY
 local Game
@@ -29,6 +35,7 @@ do
       weapon:update(dt)
       weapon.x, weapon.y = player:getCenter()
       weapon:shootAuto(mouseX, mouseY)
+      enemy:update(dt)
       return cam:lookAt(player.x, player.y)
     end,
     draw = function(self)
@@ -46,6 +53,8 @@ do
         end
       end
       weapon:draw(mouseX, mouseY)
+      g.setColor(255, 0, 0)
+      enemy:draw()
       return cam:detach()
     end,
     keypressed = function(self, key)

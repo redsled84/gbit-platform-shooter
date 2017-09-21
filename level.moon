@@ -27,7 +27,6 @@ class Level
 				n = @grid[y][x]
 				if n == 1
 					obj = Entity x * @tileSize, y * @tileSize, 0, 0, @tileSize, @tileSize
-					World\add obj, obj.x, obj.y, obj.width, obj.height
 					@objects[#@objects+1] = obj
 	draw: =>
 		for i = 1, #@objects

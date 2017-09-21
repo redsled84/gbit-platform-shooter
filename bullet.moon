@@ -27,7 +27,6 @@ class Bullet
     @x = goalX
     @y = goalY
 
-
     return cols, len
 
 return Bullet
