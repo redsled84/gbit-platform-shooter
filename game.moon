@@ -12,19 +12,21 @@ World = require "world"
 
 {graphics: g} = love
 
+cursorImage = g.newImage "cursor.png"
+playerImage = g.newImage "player.png"
+playerImage\setFilter "nearest", "nearest"
+enemyImage = g.newImage "enemy.png"
+enemyImage\setFilter "nearest", "nearest"
+
 cam = Camera love.graphics.getWidth! / 2, love.graphics.getHeight! / 2
 
 level1 = Level!
 
+enemy = Enemy {{x: 400, y: 256}}, enemyImage, 50
+
 weapon = Weapon 0, 0, 100, g.newImage("m4.png")
 
-playerImage = g.newImage "player.png"
-playerImage\setFilter "nearest", "nearest"
 player = Player 256, 256, 0, 0, playerImage\getWidth!*2, playerImage\getHeight!*2-4, nil, playerImage
-
-enemy = Enemy {{x: 400, y: 256}}, playerImage, 50
-
-cursorImage = g.newImage "cursor.png"
 
 local mouseX, mouseY
 
@@ -42,12 +44,14 @@ class Game
     player\moveWithKeys dt
     player\updateCollision dt
 
+    enemy\update dt
+
     weapon\updateRateOfFire dt
     weapon\update dt
     weapon.x, weapon.y = player\getCenter!
     weapon\shootAuto mouseX, mouseY
 
-    enemy\update dt
+    World\removeDeadEnemies!
 
     cam\lookAt player.x, player.y
 
@@ -61,7 +65,7 @@ class Game
       b = weapon.bullets[i]
       px, py = player\getCenter!
       distance = math.sqrt math.pow(px - b.x, 2) + math.pow(py - b.y, 2)
-      if distance > 80
+      if distance > 60
         g.setColor 0, 0, 0
         g.rectangle("fill", b.x, b.y, b.width, b.height)
     weapon\draw mouseX, mouseY

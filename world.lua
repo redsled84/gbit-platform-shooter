@@ -5,20 +5,8 @@ local World
 do
   local _class_0
   local _base_0 = {
-    entities = { },
-    getGroup = function(self, className)
-      local group
-      group = { }
-      for i = #self.entities, 1, -1 do
-        if self.entities[i].__class.__name == className then
-          group[#group + 1] = self.entities[i]
-        end
-      end
-      return group
-    end,
     add = function(self, item, x, y, width, height)
-      world:add(item, x, y, width, height)
-      self.entities[#self.entities + 1] = item
+      return world:add(item, x, y, width, height)
     end,
     move = function(self, item, x, y, collisionFilter)
       return world:move(item, x, y, collisionFilter)
@@ -28,6 +16,22 @@ do
     end,
     remove = function(self, item)
       return world:remove(item)
+    end,
+    getItems = function(self)
+      return world:getItems()
+    end,
+    removeDeadEnemies = function(self)
+      local items
+      items = self:getItems()
+      for i = #items, 1, -1 do
+        if items[i].__class.__name == "Enemy" then
+          if items[i].health <= 0 then
+            items[i].removed = true
+            self:remove(items[i])
+            items[i] = nil
+          end
+        end
+      end
     end
   }
   _base_0.__index = _base_0

@@ -9,19 +9,21 @@ local Weapon = require("weapon")
 local World = require("world")
 local g
 g = love.graphics
-local cam = Camera(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
-local level1 = Level()
-local weapon = Weapon(0, 0, 100, g.newImage("m4.png"))
+local cursorImage = g.newImage("cursor.png")
 local playerImage = g.newImage("player.png")
 playerImage:setFilter("nearest", "nearest")
-local player = Player(256, 256, 0, 0, playerImage:getWidth() * 2, playerImage:getHeight() * 2 - 4, nil, playerImage)
+local enemyImage = g.newImage("enemy.png")
+enemyImage:setFilter("nearest", "nearest")
+local cam = Camera(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
+local level1 = Level()
 local enemy = Enemy({
   {
     x = 400,
     y = 256
   }
-}, playerImage, 50)
-local cursorImage = g.newImage("cursor.png")
+}, enemyImage, 50)
+local weapon = Weapon(0, 0, 100, g.newImage("m4.png"))
+local player = Player(256, 256, 0, 0, playerImage:getWidth() * 2, playerImage:getHeight() * 2 - 4, nil, playerImage)
 local mouseX, mouseY
 local Game
 do
@@ -31,11 +33,12 @@ do
       mouseX, mouseY = cam:worldCoords(love.mouse.getX(), love.mouse.getY())
       player:moveWithKeys(dt)
       player:updateCollision(dt)
+      enemy:update(dt)
       weapon:updateRateOfFire(dt)
       weapon:update(dt)
       weapon.x, weapon.y = player:getCenter()
       weapon:shootAuto(mouseX, mouseY)
-      enemy:update(dt)
+      World:removeDeadEnemies()
       return cam:lookAt(player.x, player.y)
     end,
     draw = function(self)
@@ -47,7 +50,7 @@ do
         b = weapon.bullets[i]
         px, py = player:getCenter()
         distance = math.sqrt(math.pow(px - b.x, 2) + math.pow(py - b.y, 2))
-        if distance > 80 then
+        if distance > 60 then
           g.setColor(0, 0, 0)
           g.rectangle("fill", b.x, b.y, b.width, b.height)
         end

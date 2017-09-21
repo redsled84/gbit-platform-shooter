@@ -7,6 +7,7 @@ shootSound = love.audio.newSource "shoot.wav", "static"
 shootSound\setVolume .2
 
 class Weapon
+  damage: 20
   new: (@x, @y, @magazineSize, @sprite, @audioSource, @sprayAngle=math.pi/250) =>
     @ammoCount = @magazineSize
     @drawOffset = {
@@ -16,7 +17,6 @@ class Weapon
     @fireControl = "auto"
     @bulletSpeed = 2700
     @bulletSize = 6
-    @damage = 20
 
   bullets: {}
   canShoot: true
@@ -40,7 +40,7 @@ class Weapon
         col = cols[j]
         if col.other.__class.__name ~= "Player"
           if col.other.__class.__name == "Enemy"
-            col.other.__class\damage @damage
+            col.other\damage @damage
           World\remove b
           table.remove @bullets, i
           break

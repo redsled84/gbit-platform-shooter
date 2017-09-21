@@ -1,5 +1,7 @@
 local Entity = require("entity")
 local World = require("world")
+local wallImage = love.graphics.newImage("blocks.png")
+wallImage:setFilter("nearest", "nearest")
 local Level
 do
   local _class_0
@@ -18,6 +20,20 @@ do
         1,
         1,
         1,
+        1
+      },
+      {
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         1
       },
       {
@@ -208,8 +224,8 @@ do
       for i = 1, #self.objects do
         local obj
         obj = self.objects[i]
-        love.graphics.setColor(0, 0, 0)
-        love.graphics.rectangle("fill", obj.x, obj.y, obj.width, obj.height)
+        love.graphics.setColor(255, 255, 255)
+        love.graphics.draw(wallImage, obj.x, obj.y, 0, (128 / 32), (128 / 32), 0, 72 - 32)
       end
     end
   }
