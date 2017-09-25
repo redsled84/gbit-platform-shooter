@@ -23,7 +23,7 @@ do
           nodes = {
             BT.Task:new({
               run = function(task, object)
-                object.currentGoal = object:getNextGoal()
+                object.currentGoal = object.getNextGoal()
                 return task:success()
               end
             }),
@@ -31,8 +31,10 @@ do
               nodes = {
                 BT.Task:new({
                   run = function(task, object)
-                    object.dx = object.getNextGoal().x - object.x
-                    object.dy = object.y - object.getNextGoal().y
+                    local nextGoal
+                    nextGoal = object.getNextGoal
+                    object.dx = nextGoal.x - object.x
+                    object.dy = object.y - nextGoal.y
                     return task:success()
                   end
                 }),

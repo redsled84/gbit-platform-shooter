@@ -12,16 +12,8 @@ g = love.graphics
 local cursorImage = g.newImage("cursor.png")
 local playerImage = g.newImage("player.png")
 playerImage:setFilter("nearest", "nearest")
-local enemyImage = g.newImage("enemy.png")
-enemyImage:setFilter("nearest", "nearest")
 local cam = Camera(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
 local level1 = Level()
-local enemy = Enemy({
-  {
-    x = 400,
-    y = 256
-  }
-}, enemyImage, 50)
 local weapon = Weapon(0, 0, 100, g.newImage("m4.png"))
 local player = Player(256, 256, 0, 0, playerImage:getWidth() * 2, playerImage:getHeight() * 2 - 4, nil, playerImage)
 local mouseX, mouseY
@@ -33,7 +25,6 @@ do
       mouseX, mouseY = cam:worldCoords(love.mouse.getX(), love.mouse.getY())
       player:moveWithKeys(dt)
       player:updateCollision(dt)
-      enemy:update(dt)
       weapon:updateRateOfFire(dt)
       weapon:update(dt)
       weapon.x, weapon.y = player:getCenter()
@@ -57,7 +48,6 @@ do
       end
       weapon:draw(mouseX, mouseY)
       g.setColor(255, 0, 0)
-      enemy:draw()
       return cam:detach()
     end,
     keypressed = function(self, key)

@@ -1,7 +1,9 @@
 local Entity = require("entity")
 local World = require("world")
-local wallImage = love.graphics.newImage("blocks.png")
+local wallImage = love.graphics.newImage("floor.png")
 wallImage:setFilter("nearest", "nearest")
+local ceilingImage = love.graphics.newImage("ceiling sprite.png")
+ceilingImage:setFilter("nearest", "nearest")
 local Level
 do
   local _class_0
@@ -10,16 +12,16 @@ do
     grid = {
       {
         1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
         1
       },
       {
@@ -221,11 +223,18 @@ do
     },
     objects = { },
     draw = function(self)
-      for i = 1, #self.objects do
-        local obj
-        obj = self.objects[i]
-        love.graphics.setColor(255, 255, 255)
-        love.graphics.draw(wallImage, obj.x, obj.y, 0, (128 / 32), (128 / 32), 0, 72 - 32)
+      for y = 1, #self.grid do
+        for x = 1, #self.grid[y] do
+          local n
+          n = self.grid[y][x]
+          if n == 1 then
+            love.graphics.setColor(255, 255, 255)
+            love.graphics.draw(wallImage, x * self.tileSize, y * self.tileSize, 0, (self.tileSize / 32), (self.tileSize / 32))
+          elseif n == 2 then
+            love.graphics.setColor(255, 255, 255)
+            love.graphics.draw(ceilingImage, x * self.tileSize, y * self.tileSize, 0, (self.tileSize / 32), (self.tileSize / 32))
+          end
+        end
       end
     end
   }
