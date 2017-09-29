@@ -2,7 +2,7 @@ local Entity = require("entity")
 local World = require("world")
 local wallImage = love.graphics.newImage("floor.png")
 wallImage:setFilter("nearest", "nearest")
-local ceilingImage = love.graphics.newImage("ceiling sprite.png")
+local ceilingImage = love.graphics.newImage("ceiling-sprite.png")
 ceilingImage:setFilter("nearest", "nearest")
 local Level
 do

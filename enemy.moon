@@ -1,3 +1,4 @@
+inspect = require "inspect"
 BT = require "lib.behaviour_tree"
 Entity = require "entity"
 World = require "world"
@@ -18,11 +19,7 @@ class Enemy extends Entity
 		@dy = 0
 		@walkSpeed = 100
 		super @currentGoal.x, @currentGoal.y, nil, nil, @sprite\getWidth!, @sprite\getHeight! * 2, {255, 255, 255}, @sprite
-	getNextGoal: =>
-		return @direction > 0 and @goals[@goalCounter+1] or @goals[@goalCounter-1]
 	removed: false
-	damage: (amount) =>
-		@health = @health - amount < 0 and 0 or @health - amount
 	movementSequence: =>
 		BT\new {
 			object: self
@@ -30,7 +27,7 @@ class Enemy extends Entity
 				nodes: {
 					BT.Task\new {
 						run: (task, object) ->
-							object.currentGoal = object.getNextGoal!
+							@currentGoal = @getNextGoal!
 							task\success!
 					}
 					BT.Sequence\new {
@@ -38,9 +35,9 @@ class Enemy extends Entity
 							BT.Task\new {
 								run: (task, object) ->
 									local nextGoal
-									nextGoal = object.getNextGoal
-									object.dx = nextGoal.x - object.x
-									object.dy = object.y - nextGoal.y
+									nextGoal = @getNextGoal!
+									@dx = nextGoal.x - @x
+									@dy = @y - nextGoal.y
 									task\success!
 							}
 							BT.Priority\new {
@@ -49,28 +46,28 @@ class Enemy extends Entity
 										nodes: {
 											BT.Task\new {
 												run: (task, object) ->
-													if object.dy > 0
+													if @dy > 0
 														task\success!
 													else
 														task\fail!
 											}
 											BT.Task\new {
 												run: (task, object) ->
-													object.vy = object.jumpVelocity
+													@jump!
 													task\success!
 											}
 										}
 									}
 									BT.Task\new {
 										run: (task, object) ->
-											if object.dx > 0
-												object.vx = object.walkSpeed
+											if @dx > 0
+												@vx = @walkSpeed
 												task\success!
-											elseif object.dx < 0
-												object.vx = -object.walkSpeed
+											elseif @dx < 0
+												@vx = -@walkSpeed
 												task\success!
 											else
-												object.vx = 0
+												@vx = 0
 												task\fail!
 									}
 								}
@@ -81,6 +78,13 @@ class Enemy extends Entity
 			}
 		}
 
+	getNextGoal: =>
+		if @direction > 0 and @goalCounter + 1 <= #@goals
+			return @goals[@goalCounter+1]
+		@goalCounter = 1
+		return @goals[@goalCounter]
+	damage: (amount) =>
+		@health = @health - amount < 0 and 0 or @health - amount
 	update: (dt) =>
 		@movementSequence!\run!
 		@updateGravity dt, gravity, terminalVelocity
@@ -90,15 +94,20 @@ class Enemy extends Entity
 			goalX, goalY, cols, len = @getCollisionInfo dt
 
 			local col
+			@onGround = false
 			for i = 1, len
 				col = cols[i]
 				if col.normal.y == 1 or col.normal.y == -1
 					@vy = 0
+					@onGround = col.normal.y == -1
 				if col.normal.x == 1
 					@vx = 100
 				elseif col.normal.x == -1
 					@vx = -100
 			@x, @y = goalX, goalY
+	jump: =>
+		if @onGround
+			@vy = @jumpVelocity
 	draw: =>
 		if not @removed
 			love.graphics.setColor unpack @colors

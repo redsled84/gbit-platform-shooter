@@ -1,3 +1,4 @@
+local inspect = require("inspect")
 local BT = require("lib.behaviour_tree")
 local Entity = require("entity")
 local World = require("world")
@@ -9,13 +10,7 @@ do
   local _class_0
   local _parent_0 = Entity
   local _base_0 = {
-    getNextGoal = function(self)
-      return self.direction > 0 and self.goals[self.goalCounter + 1] or self.goals[self.goalCounter - 1]
-    end,
     removed = false,
-    damage = function(self, amount)
-      self.health = self.health - amount < 0 and 0 or self.health - amount
-    end,
     movementSequence = function(self)
       return BT:new({
         object = self,
@@ -23,7 +18,7 @@ do
           nodes = {
             BT.Task:new({
               run = function(task, object)
-                object.currentGoal = object.getNextGoal()
+                self.currentGoal = self:getNextGoal()
                 return task:success()
               end
             }),
@@ -32,9 +27,9 @@ do
                 BT.Task:new({
                   run = function(task, object)
                     local nextGoal
-                    nextGoal = object.getNextGoal
-                    object.dx = nextGoal.x - object.x
-                    object.dy = object.y - nextGoal.y
+                    nextGoal = self:getNextGoal()
+                    self.dx = nextGoal.x - self.x
+                    self.dy = self.y - nextGoal.y
                     return task:success()
                   end
                 }),
@@ -44,7 +39,7 @@ do
                       nodes = {
                         BT.Task:new({
                           run = function(task, object)
-                            if object.dy > 0 then
+                            if self.dy > 0 then
                               return task:success()
                             else
                               return task:fail()
@@ -53,7 +48,7 @@ do
                         }),
                         BT.Task:new({
                           run = function(task, object)
-                            object.vy = object.jumpVelocity
+                            self:jump()
                             return task:success()
                           end
                         })
@@ -61,14 +56,14 @@ do
                     }),
                     BT.Task:new({
                       run = function(task, object)
-                        if object.dx > 0 then
-                          object.vx = object.walkSpeed
+                        if self.dx > 0 then
+                          self.vx = self.walkSpeed
                           return task:success()
-                        elseif object.dx < 0 then
-                          object.vx = -object.walkSpeed
+                        elseif self.dx < 0 then
+                          self.vx = -self.walkSpeed
                           return task:success()
                         else
-                          object.vx = 0
+                          self.vx = 0
                           return task:fail()
                         end
                       end
@@ -81,6 +76,17 @@ do
         })
       })
     end,
+    getNextGoal = function(self)
+      print(self.goalCounter)
+      if self.direction > 0 and self.goalCounter + 1 <= #self.goals then
+        return self.goals[self.goalCounter + 1]
+      end
+      self.goalCounter = 1
+      return self.goals[self.goalCounter]
+    end,
+    damage = function(self, amount)
+      self.health = self.health - amount < 0 and 0 or self.health - amount
+    end,
     update = function(self, dt)
       self:movementSequence():run()
       self:updateGravity(dt, gravity, terminalVelocity)
@@ -88,10 +94,12 @@ do
         local goalX, goalY, cols, len
         goalX, goalY, cols, len = self:getCollisionInfo(dt)
         local col
+        self.onGround = false
         for i = 1, len do
           col = cols[i]
           if col.normal.y == 1 or col.normal.y == -1 then
             self.vy = 0
+            self.onGround = col.normal.y == -1
           end
           if col.normal.x == 1 then
             self.vx = 100
@@ -100,6 +108,11 @@ do
           end
         end
         self.x, self.y = goalX, goalY
+      end
+    end,
+    jump = function(self)
+      if self.onGround then
+        self.vy = self.jumpVelocity
       end
     end,
     draw = function(self)

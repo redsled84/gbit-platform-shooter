@@ -8,7 +8,6 @@ local Weapon
 do
   local _class_0
   local _base_0 = {
-    damage = 20,
     bullets = { },
     canShoot = true,
     rateOfFire = {
@@ -33,7 +32,7 @@ do
           col = cols[j]
           if col.other.__class.__name ~= "Player" then
             if col.other.__class.__name == "Enemy" then
-              col.other:damage(self.damage)
+              col.other:damage(self.attackDamage)
             end
             World:remove(b)
             table.remove(self.bullets, i)
@@ -99,6 +98,7 @@ do
         sprayAngle = math.pi / 250
       end
       self.x, self.y, self.magazineSize, self.sprite, self.audioSource, self.sprayAngle = x, y, magazineSize, sprite, audioSource, sprayAngle
+      self.attackDamage = 20
       self.ammoCount = self.magazineSize
       self.drawOffset = {
         x = self.sprite:getWidth() / 4,

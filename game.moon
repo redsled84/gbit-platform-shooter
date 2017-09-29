@@ -15,14 +15,14 @@ World = require "world"
 cursorImage = g.newImage "cursor.png"
 playerImage = g.newImage "player.png"
 playerImage\setFilter "nearest", "nearest"
---enemyImage = g.newImage "enemy.png"
---enemyImage\setFilter "nearest", "nearest"
+enemyImage = g.newImage "enemy.png"
+enemyImage\setFilter "nearest", "nearest"
 
 cam = Camera love.graphics.getWidth! / 2, love.graphics.getHeight! / 2
 
 level1 = Level!
 
---enemy = Enemy {{x: 400, y: 256}}, enemyImage, 50
+enemy = Enemy {{x: 400, y: 510}, {x:600, y:510}, {x: 700, y: 510}}, enemyImage, 50
 
 weapon = Weapon 0, 0, 100, g.newImage("m4.png")
 
@@ -44,7 +44,7 @@ class Game
     player\moveWithKeys dt
     player\updateCollision dt
 
-   -- enemy\update dt
+    enemy\update dt
 
     weapon\updateRateOfFire dt
     weapon\update dt
@@ -71,7 +71,7 @@ class Game
     weapon\draw mouseX, mouseY
 
     g.setColor 255, 0, 0
-    --enemy\draw!
+    enemy\draw!
 
     cam\detach!
 
